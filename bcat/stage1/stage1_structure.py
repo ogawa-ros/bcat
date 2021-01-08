@@ -4,6 +4,8 @@ import typing
 import numpy
 import astropy.units
 
+from bcat.common.common_structure import freq_axis
+
 @dataclasses.dataclass
 class stage1_data_structure:
     label: str = ''
@@ -11,7 +13,7 @@ class stage1_data_structure:
     coord: numpy.array = numpy.array([])
     spectrum: numpy.array = numpy.array([])
     rf: freq_axis = freq_axis()
-        
+    
     def __post_init__(self):
         if len(self.obsmode) != len(self.coord):
             errmsg = f'Array length is different between obsmode and coord: ' +\
