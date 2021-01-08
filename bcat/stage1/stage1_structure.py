@@ -5,7 +5,7 @@ import numpy
 import astropy.units
 
 @dataclasses.dataclass
-class stage1_data:
+class stage1_data_structure:
     label: str = ''
     obsmode: typing.List[str] = dataclasses.field(default_factory=list)
     coord: numpy.array = numpy.array([])
