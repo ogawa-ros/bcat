@@ -53,7 +53,7 @@ class opu1p85(object):
         _df_resample = pandas.concat([table[i] for i in table], axis = 1)
         return _df_resample
 
-    def get_restfreq(mol, trans):
+    def get_restfreq(self,mol, trans):
         col, trans_, elev = astroquery.lamda.Lamda.query(mol=mol)
         return trans_[trans_['Upper']==trans+1]['Frequency'][0] * GHz
 
@@ -84,12 +84,12 @@ class opu1p85(object):
         rf3 = (f_spec+flo_b7+slo_4_6)
         rf4 = (f_spec+flo_b7+slo_19_21)
 
-        rf12co21 = get_restfreq('co',2)
-        rf13co21 = get_restfreq('13co',2)
-        rfc18o21 = get_restfreq('c18o',2)
-        rf12co32 = get_restfreq('co',3)
-        rf13co32 = get_restfreq('13co',3)
-        rfc18o32 = get_restfreq('c18o',3)
+        rf12co21 = self.get_restfreq('co',2)
+        rf13co21 = self.get_restfreq('13co',2)
+        rfc18o21 = self.get_restfreq('c18o',2)
+        rf12co32 = self.get_restfreq('co',3)
+        rf13co32 = self.get_restfreq('13co',3)
+        rfc18o32 = self.get_restfreq('c18o',3)
         df = (2*GHz/2**15)
         dv_12 = df/rf12co21*c
         dv_13 = df/rf13co21*c
