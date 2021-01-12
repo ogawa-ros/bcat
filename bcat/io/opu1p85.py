@@ -128,7 +128,7 @@ class opu1p85(object):
         _df_resample = self.necstdb2pandas(db)
         df_resample = self.read_wcs(db,_df_resample)
         line_data,freq = self.get_linedata(db,spec)
-        df_spec_2 = pandas.concat([df_resample["wcs_x"][::1],df_resample["wcs_y"][::1]], line_data, axis=1)
+        df_spec_2 = pandas.concat([df_resample["wcs_x"][::1],df_resample["wcs_y"][::1], line_data], axis=1)
         df_spec_1 = pandas.concat([df_data_2["wcs_x"][::1],df_data_2["wcs_y"][::1]], axis=1).interpolate()
         df_spec = pandas.concat([df_spec_1, df_spec], axis=1).dropna(how="any")
         return df_spec,freq
