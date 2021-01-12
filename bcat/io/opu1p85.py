@@ -10,6 +10,9 @@ from astropy.units import km
 from astropy.units import s
 from astropy.constants import c
 
+import bcat.structure
+import bcat.stage1
+
 class opu1p85(object):
 
     def __init__(self):
