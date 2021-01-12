@@ -181,7 +181,7 @@ class opu1p85(object):
 
     def container(self,label,path,spec='12CO21'):
         db = self.open(path)
-        df_spec,freq = self.create_spec(self,db,spec)
+        df_spec,freq = self.create_spec(db,spec)
         obsmode = self.create_obsmode(df_spec)
         coord = self.create_coord(df_spec)
         d1_data = bcat.structure.stage1_data(
