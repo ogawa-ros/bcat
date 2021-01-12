@@ -69,7 +69,7 @@ class opu1p85(object):
         data = wcs['data'][:, 1:3]
         time = pandas.to_datetime(wcs['timestamp'], unit='s')
         wcs_divide = pandas.DataFrame(data=data, columns=['wcs_x','wcs_y'], index=time).sort_index()
-        df_resample = pandas.concat([df,wcs_divide], axis=1)
+        df_resample = pandas.concat([df_resample,wcs_divide], axis=1)
         return df_resample
 
     def get_linedata(self,db,spec):
@@ -118,7 +118,7 @@ class opu1p85(object):
 
         xffts= db.open_table(self.line_board[spec]).read(astype='array')
         line_data = pandas.DataFrame(data=(xffts['data'][:,:-1])[:,mask[spec]], index=pandas.to_datetime(xffts['data'][:,-1], unit='s')) # 分光データの最後の timestamp
-        f = freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
+        f = bcat.structure.freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
         return line_data,f
 
     def create_spec(self,db,spec):
