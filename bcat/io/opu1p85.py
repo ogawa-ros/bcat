@@ -176,7 +176,7 @@ class opu1p85(object):
     def create_coord(self,df_spec,frame='fk5'):
         coord = astropy.coordinates.SkyCoord(
             ra = numpy.array(df_spec['wcs_x']) * astropy.units.deg,
-            dec = numpy.array(df_sepc['wcs_y']) * astropy.units.deg,
+            dec = numpy.array(df_spec['wcs_y']) * astropy.units.deg,
             frame = frame,
             location = self.loc1p85,
             obstime = astropy.time.Time(
