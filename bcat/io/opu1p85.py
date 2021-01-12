@@ -122,6 +122,7 @@ class opu1p85(object):
         xffts= db.open_table(self.line_board[spec]).read(astype='array')
         line_data = pandas.DataFrame(data=(xffts['data'][:,:-1])[:,mask[spec]], index=pandas.to_datetime(xffts['data'][:,-1], unit='s')) # 分光データの最後の timestamp
         f = bcat.structure.freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
+        del xffts
         return line_data,f
 
     def create_spec(self,db,spec):
