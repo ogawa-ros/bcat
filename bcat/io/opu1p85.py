@@ -131,10 +131,8 @@ class opu1p85(object):
         line_data,freq = self.get_linedata(db,spec)
         df_spec_2 = pandas.concat([df_resample["wcs_x"][::1],df_resample["wcs_y"][::1], line_data], axis=1)
         df_spec_1 = pandas.concat([df_spec_2["wcs_x"][::1],df_spec_2["wcs_y"][::1]], axis=1).interpolate()
-        print('spec1 OK')
         del df_spec_2
         df_spec = pandas.concat([df_spec_1, line_data], axis=1).dropna(how="any")
-        print('df_spec OK')
         del line_data
         return df_spec,freq
 
@@ -190,7 +188,7 @@ class opu1p85(object):
     def container(self,label,path,spec='12CO21'):
         db = self.open(path)
         df_spec,freq = self.create_spec(db,spec)
-        obsmode = self.create_obsmode(df_spec)
+        obsmode = self.create_obsmode(df_spec,db)
         coord = self.create_coord(df_spec)
         d1_data = bcat.structure.stage1_data(
             label=label,
