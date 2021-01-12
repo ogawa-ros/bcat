@@ -2,6 +2,7 @@ import time
 import numpy
 import pandas
 import necstdb
+import astropy
 import astroquery.lamda
 from astropy.units import GHz
 from astropy.units import kHz
