@@ -138,12 +138,12 @@ class opu1p85(object):
 
     def create_obsmode(self,df_resample,db):
         status = self.get_status(db)
-        hot_s = status[status['data'] == b'hot start\x00'].index
-        hot_e = status[status['data'] == b'hot end  \x00'].index
-        off_s = status[status['data'] == b'off start\x00'].index
-        off_e = status[status['data'] == b'off end  \x00'].index
-        on_s = status[status['data'] == b'on start \x00'].index
-        on_e = status[status['data'] == b'on finish\x00'].index
+        hot_s = status[status['data'] == b'hot start'].index
+        hot_e = status[status['data'] == b'hot end  '].index
+        off_s = status[status['data'] == b'off start'].index
+        off_e = status[status['data'] == b'off end  '].index
+        on_s = status[status['data'] == b'on start '].index
+        on_e = status[status['data'] == b'on finish'].index
         scan_s = status[status['data'] == b'otf line '].index
         obsmode = []
         for d in df_resample.index:
