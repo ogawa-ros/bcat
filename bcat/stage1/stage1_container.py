@@ -2,12 +2,12 @@
 import bcat.stage1.chopper_wheel
 
 
-class stage1_container:
-    
+class stage1_container(object):
+
     def __init__(self, data):
         self.data = data
+        self.cw = bcat.stage1.chopper_wheel.stage1_chopper_wheel(self.data)
         pass
 
-    def chopper_wheel(self):
-        return bcat.stage1.chopper_wheel(self.data)
-
+    def get_chopper_wheel_spec(self):
+        return self.cw.chopper_wheel()
