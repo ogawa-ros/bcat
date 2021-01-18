@@ -1,6 +1,7 @@
 import time
 import numpy
 import pandas
+import pathlib
 import necstdb
 import astropy
 import astroquery.lamda
@@ -67,6 +68,12 @@ class opu1p85(object):
         status = status.set_index('timestamp').sort_index()
         return status
 
+    def get_frame(self,db):
+        frame = db.open_table('necst-telescope-coordinate-wcs_frame_cmd').read(astype='pandas')
+        frame['timestamp'] = pandas.to_datetime(frame['timestamp'], unit='s')
+        frame = frame.set_index('timestamp').sort_index()
+        return frame
+
     def read_wcs(self,db,df_resample):
         wcs = db.open_table('necst-telescope-coordinate-wcs').read(astype='array')
         data = wcs['data'][:, 1:3]
@@ -75,7 +82,7 @@ class opu1p85(object):
         df_resample = pandas.concat([df_resample,wcs_divide], axis=1)
         return df_resample
 
-    def get_linedata(self,db,spec):
+    def get_linedata(self,db,spec,vwidth):
         f_spec = numpy.linspace(0,2,2**15)*GHz
         flo_b7 = 325.08*GHz
         flo_b6 = 225*GHz
@@ -98,7 +105,7 @@ class opu1p85(object):
         dv_12 = df/rf12co21*c
         dv_13 = df/rf13co21*c
         dv_18 = df/rfc18o21*c
-        vwidth = 150*km/s
+        vwidth = vwidth*km/s
         fwidth_12CO21 = (vwidth*rf12co21/c).to('GHz')
         fwidth_13CO21 = (vwidth*rf13co21/c).to('GHz')
         fwidth_C18O21 = (vwidth*rfc18o21/c).to('GHz')
@@ -125,10 +132,10 @@ class opu1p85(object):
         del xffts
         return line_data,f
 
-    def create_spec(self,db,spec):
+    def create_spec(self,db,spec,vwidth=150):
         _df_resample = self.necstdb2pandas(db)
         df_resample = self.read_wcs(db,_df_resample)
-        line_data,freq = self.get_linedata(db,spec)
+        line_data,freq = self.get_linedata(db,spec,vwidth)
         df_spec_2 = pandas.concat([df_resample["wcs_x"][::1],df_resample["wcs_y"][::1], line_data], axis=1)
         df_spec_1 = pandas.concat([df_spec_2["wcs_x"][::1],df_spec_2["wcs_y"][::1]], axis=1).interpolate()
         del df_spec_2
@@ -136,8 +143,9 @@ class opu1p85(object):
         del line_data
         return df_spec,freq
 
-    def create_obsmode(self,df_resample,db):
+    def create_obsmode_frame(self,df_resample,db):
         status = self.get_status(db)
+        frame = self.get_frame(db)
         hot_s = status[status['data'] == b'hot start'].index
         hot_e = status[status['data'] == b'hot end  '].index
         off_s = status[status['data'] == b'off start'].index
@@ -145,18 +153,24 @@ class opu1p85(object):
         on_s = status[status['data'] == b'on start '].index
         on_e = status[status['data'] == b'on finish'].index
         scan_s = status[status['data'] == b'otf line '].index
+        off_frame = frame.iloc[(off_s[0] >= frame.index)&(hot_e[0] <= frame.index)]['data'][0].decode()
+        on_frame = frame.iloc[(on_s[0] <= frame.index)&(on_e[0] >= frame.index)]['data'][0].decode()
         obsmode = []
+        frame_list = []
         for d in df_resample.index:
             d_flag = None
+            d_frame = None
             for i in range(len(on_s)):
                 if (d > on_s[i]) & (d < on_e[i]):
                     d_flag = 'ON'
+                    d_frame = on_frame
                     break
                 else:
                     continue
             for i in range(len(off_s)):
                 if (d > off_s[i]) & (d < off_e[i]):
                     d_flag = 'OFF'
+                    d_frame = off_frame
                     break
                 else:
                     continue
@@ -164,16 +178,19 @@ class opu1p85(object):
             for i in range(len(hot_s)):
                 if (d > hot_s[i]) & (d < hot_e[i]):
                     d_flag = 'HOT'
+                    d_frame = off_frame
                     break
                 else:
                     continue
             if d_flag:
                 obsmode.append(d_flag)
+                frame_list.append(d_frame)
             else:
                 obsmode.append('TRANS')
-        return obsmode
+                frame_list.append(on_frame)
+        return obsmode,frame_list
 
-    def create_coord(self,df_spec,frame='fk5'):
+    def create_coord(self,df_spec,frame):
         coord = astropy.coordinates.SkyCoord(
             ra = numpy.array(df_spec['wcs_x']) * astropy.units.deg,
             dec = numpy.array(df_spec['wcs_y']) * astropy.units.deg,
@@ -185,11 +202,19 @@ class opu1p85(object):
             )
         return coord
 
-    def container(self,label,path,spec='12CO21'):
+    def create_label(self,db,path,spec):
+        target = db.open_table('otf-target').read(astype='array')
+        target = target[0][1].decode()
+        date = pathlib.Path(path).name.strip('.necstdb')
+        label = target+'_'+date+'_'+spec
+        return label
+
+    def container(self,label,path,spec='12CO21',vwidth):
         db = self.open(path)
-        df_spec,freq = self.create_spec(db,spec)
-        obsmode = self.create_obsmode(df_spec,db)
-        coord = self.create_coord(df_spec)
+        df_spec,freq = self.create_spec(db,spec,vwidth)
+        obsmode,frame = self.create_obsmode_frame(df_spec,db)
+        coord = self.create_coord(df_spec,frame)
+        label = self.create_label(db,path,spec)
         d1_data = bcat.structure.stage1_data(
             label=label,
             obsmode=obsmode,
@@ -198,3 +223,8 @@ class opu1p85(object):
             rf=freq)
         d1 = bcat.stage1.cnotainer(d1_data)
         return d1
+
+def open(path,spec,vwidth):
+    OPU = opu1p85()
+    d1 = OPU.container(path,spec,vwidth)
+    return d1
