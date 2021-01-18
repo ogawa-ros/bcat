@@ -224,7 +224,7 @@ class opu1p85(object):
         d1 = bcat.stage1.cnotainer(d1_data)
         return d1
 
-def open(path,spec,vwidth):
+def opendata(path,spec,vwidth):
     OPU = opu1p85()
     d1 = OPU.container(path,spec,vwidth)
     return d1
