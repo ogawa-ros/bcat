@@ -191,7 +191,8 @@ class opu1p85(object):
         return obsmode,frame_list
 
     def create_coord(self,df_spec,frame):
-        print(frame)
+        print(len(frame))
+        print(len(df_spec['wcs_x']))
         coord = astropy.coordinates.SkyCoord(
             ra = numpy.array(df_spec['wcs_x']) * astropy.units.deg,
             dec = numpy.array(df_spec['wcs_y']) * astropy.units.deg,
