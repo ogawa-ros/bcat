@@ -1,6 +1,5 @@
 import numpy
 import astropy
-import tqdm
 import time
 
 class stage1_chopper_wheel(object):
@@ -39,7 +38,7 @@ class stage1_chopper_wheel(object):
 
 
         Tas = []
-        for i in tqdm.tqdm(range(len(spectrum_on))):
+        for i in range(len(spectrum_on)):
             hot_idx = numpy.abs(obstime_hot-obstime_on[i]).argmin()
             off_idx = numpy.abs(obstime_off-obstime_on[i]).argmin()
             Tas.append(Tamb*(spectrum_on[i]-spectrum_off[off_idx])/(spectrum_hot[hot_idx]-spectrum_off[off_idx]))
