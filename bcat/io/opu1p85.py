@@ -52,7 +52,6 @@ class opu1p85(object):
         _df_resample,table = {},{}
         #いつもの
         for i, j in self.param.items():
-            print(j)
             table[i] = db.open_table(j).read(astype='pandas')
             table[i]['timestamp'] = pandas.to_datetime(table[i]['timestamp'], unit='s')
             table[i] = table[i].set_index('timestamp').sort_index().rename(columns={'data': i}).astype(float)
@@ -154,6 +153,7 @@ class opu1p85(object):
         on_s = status[status['data'] == b'on start '].index
         on_e = status[status['data'] == b'on finish'].index
         scan_s = status[status['data'] == b'otf line '].index
+        print(frame)
         off_frame = frame.iloc[(off_s[0] >= frame.index)&(hot_e[0] <= frame.index)]['data'][0].decode()
         on_frame = frame.iloc[(on_s[0] <= frame.index)&(on_e[0] >= frame.index)]['data'][0].decode()
         obsmode = []
