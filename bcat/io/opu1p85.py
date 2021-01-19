@@ -153,24 +153,24 @@ class opu1p85(object):
         on_s = status[status['data'] == b'on start \x00'].index
         on_e = status[status['data'] == b'on finish\x00'].index
         scan_s = status[status['data'] == b'otf line \x00'].index
-        off_frame = frame.iloc[(off_s[0] >= frame.index)&(hot_e[0] <= frame.index)]['data'][0].decode()
+        #off_frame = frame.iloc[(off_s[0] >= frame.index)&(hot_e[0] <= frame.index)]['data'][0].decode()
         on_frame = frame.iloc[(on_s[0] <= frame.index)&(on_e[0] >= frame.index)]['data'][0].decode()
         obsmode = []
-        frame_list = []
+        #frame_list = []
         for d in df_resample.index:
             d_flag = None
-            d_frame = None
+            #d_frame = None
             for i in range(len(on_s)):
                 if (d > on_s[i]) & (d < on_e[i]):
                     d_flag = 'ON'
-                    d_frame = on_frame
+                    #d_frame = on_frame
                     break
                 else:
                     continue
             for i in range(len(off_s)):
                 if (d > off_s[i]) & (d < off_e[i]):
                     d_flag = 'OFF'
-                    d_frame = off_frame
+                    #d_frame = off_frame
                     break
                 else:
                     continue
@@ -178,17 +178,17 @@ class opu1p85(object):
             for i in range(len(hot_s)):
                 if (d > hot_s[i]) & (d < hot_e[i]):
                     d_flag = 'HOT'
-                    d_frame = off_frame
+                    #d_frame = off_frame
                     break
                 else:
                     continue
             if d_flag:
                 obsmode.append(d_flag)
-                frame_list.append(d_frame)
+                #frame_list.append(d_frame)
             else:
                 obsmode.append('TRANS')
-                frame_list.append(on_frame)
-        return obsmode,frame_list
+                #frame_list.append(on_frame)
+        return obsmode,on_frame
 
     def create_coord(self,df_spec,frame):
         print(len(frame))
