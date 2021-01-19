@@ -43,7 +43,7 @@ class opu1p85(object):
 
 
     def open(self,path):
-        db_name = path
+        db_name = pathlib.Path(path)
         db = necstdb.opendb(db_name)
         return db
 
