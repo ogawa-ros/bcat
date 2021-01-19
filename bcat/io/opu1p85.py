@@ -222,7 +222,7 @@ class opu1p85(object):
             label=label,
             obsmode=obsmode,
             coord=coord,
-            temperature = 27 *deg_C
+            temperature = 27 *deg_C,
             spectrum=df_spec.drop(['wcs_x', 'wcs_y'], axis=1).values,
             rf=freq)
         d1 = bcat.stage1.cnotainer(d1_data)
