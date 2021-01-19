@@ -143,16 +143,16 @@ class opu1p85(object):
         del line_data
         return df_spec,freq
 
-    def create_obsmode_frame(self,df_resample,db):
+    def create_obsmode_frame(self,db,df_resample):
         status = self.get_status(db)
         frame = self.get_frame(db)
-        hot_s = status[status['data'] == b'hot start'].index
-        hot_e = status[status['data'] == b'hot end  '].index
-        off_s = status[status['data'] == b'off start'].index
-        off_e = status[status['data'] == b'off end  '].index
-        on_s = status[status['data'] == b'on start '].index
-        on_e = status[status['data'] == b'on finish'].index
-        scan_s = status[status['data'] == b'otf line '].index
+        hot_s = status[status['data'] == b'hot start\x00'].index
+        hot_e = status[status['data'] == b'hot end  \x00'].index
+        off_s = status[status['data'] == b'off start\x00'].index
+        off_e = status[status['data'] == b'off end  \x00'].index
+        on_s = status[status['data'] == b'on start \x00'].index
+        on_e = status[status['data'] == b'on finish\x00'].index
+        scan_s = status[status['data'] == b'otf line \x00'].index
         print(status)
         off_frame = frame.iloc[off_s[0] >= frame.index]['data'][0].decode()
         on_frame = frame.iloc[(on_s[0] <= frame.index)&(on_e[0] >= frame.index)]['data'][0].decode()
@@ -213,7 +213,7 @@ class opu1p85(object):
     def container(self,path,vwidth,spec='12CO21'):
         db = self.open(path)
         df_spec,freq = self.create_spec(db,spec,vwidth)
-        obsmode,frame = self.create_obsmode_frame(df_spec,db)
+        obsmode,frame = self.create_obsmode_frame(db,df_spec)
         coord = self.create_coord(df_spec,frame)
         label = self.create_label(db,path,spec)
         d1_data = bcat.structure.stage1_data(
