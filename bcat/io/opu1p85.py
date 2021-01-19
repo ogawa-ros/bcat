@@ -210,7 +210,7 @@ class opu1p85(object):
         label = target+'_'+date+'_'+spec
         return label
 
-    def container(self,label,path,vwidth,spec='12CO21'):
+    def container(self,path,vwidth,spec='12CO21'):
         db = self.open(path)
         df_spec,freq = self.create_spec(db,spec,vwidth)
         obsmode,frame = self.create_obsmode_frame(df_spec,db)
@@ -227,5 +227,5 @@ class opu1p85(object):
 
 def opendata(path,spec,vwidth):
     OPU = opu1p85()
-    d1 = OPU.container(path,spec,vwidth)
+    d1 = OPU.container(path,vwidth,spec)
     return d1
