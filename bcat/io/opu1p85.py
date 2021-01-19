@@ -132,7 +132,7 @@ class opu1p85(object):
         del xffts
         return line_data,f
 
-    def create_spec(self,db,spec,vwidth=150):
+    def create_spec(self,db,spec,vwidth):
         _df_resample = self.necstdb2pandas(db)
         df_resample = self.read_wcs(db,_df_resample)
         line_data,freq = self.get_linedata(db,spec,vwidth)
