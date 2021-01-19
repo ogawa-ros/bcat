@@ -198,6 +198,7 @@ class opu1p85(object):
             ra = numpy.array(df_spec['wcs_x']) * astropy.units.deg,
             dec = numpy.array(df_spec['wcs_y']) * astropy.units.deg,
             frame = frame,
+            temperature = 27 *deg_C,
             location = self.loc1p85,
             obstime = astropy.time.Time(
                         numpy.array(df_spec.index.astype(numpy.int64)/10**9),
@@ -222,7 +223,6 @@ class opu1p85(object):
             label=label,
             obsmode=obsmode,
             coord=coord,
-            temperature = 27 *deg_C,
             spectrum=df_spec.drop(['wcs_x', 'wcs_y'], axis=1).values,
             rf=freq)
         d1 = bcat.stage1.cnotainer(d1_data)
