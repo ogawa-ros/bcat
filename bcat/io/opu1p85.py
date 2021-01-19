@@ -153,7 +153,7 @@ class opu1p85(object):
         on_s = status[status['data'] == b'on start '].index
         on_e = status[status['data'] == b'on finish'].index
         scan_s = status[status['data'] == b'otf line '].index
-        print(off_s)
+        print(status)
         off_frame = frame.iloc[off_s[0] >= frame.index]['data'][0].decode()
         on_frame = frame.iloc[(on_s[0] <= frame.index)&(on_e[0] >= frame.index)]['data'][0].decode()
         obsmode = []
