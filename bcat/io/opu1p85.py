@@ -52,6 +52,7 @@ class opu1p85(object):
         _df_resample,table = {},{}
         #いつもの
         for i, j in self.param.items():
+            print(j)
             table[i] = db.open_table(j).read(astype='pandas')
             table[i]['timestamp'] = pandas.to_datetime(table[i]['timestamp'], unit='s')
             table[i] = table[i].set_index('timestamp').sort_index().rename(columns={'data': i}).astype(float)
