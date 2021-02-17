@@ -1,7 +1,65 @@
 
 import numpy
+import datetime
 import matplotlib.pyplot
 import astropy.io.fits
+import astropy.coordinates
+from astropy.units import deg, arcmin, arcsec, MHz, Hz
+
+import bcat.common.common_structure
+
+
+def create_stage1(record):
+    pass
+    
+
+def get_obstime(record):
+    def decode(timestamp):
+        t = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').timestamp()
+        return t - 9
+
+    obstime = astropy.time.Time(numpy.array([decode(_t) for _t in record['date-obs']]), format='unix')
+    return obstime
+
+
+def get_rf_header(record):
+    lo1 = record['lofreq'] * MHz
+    lo2 = record['_2ndlo'] * Hz
+    sideband1 = record['sideband']
+    sideband2 = record['_2ndsb']
+
+    sb1 = numpy.zeros_like(sideband1, dtype='int8')
+    sb1[sideband1 == 'U'] = 1
+    sb1[sideband1 == 'L'] = -1
+
+    sb2 = numpy.zeros_like(sideband2, dtype='int8')
+    sb2[sideband2 == 'U'] = 1
+    sb2[sideband2 == 'L'] = -1
+
+    crval = (lo1 + (sb1 * lo2)).to('Hz').value
+    crpix = numpy.zeros_like(crval)
+    cdelt = sb2 * record['freqres']
+    
+    return bcat.common.common_structure.freq_axis_array(cdelt, crpix, cdelt)
+    
+    
+def get_coord(record):
+    x = record['crval2'] * deg + record['lamdel'] * arcsec
+    y = record['crval3'] * deg + record['betdel'] * arcsec
+
+    if record['coordsys'][0].lower() == 'b1950':
+        frame = 'fk4'
+    elif record['coordsys'][0].lower() == 'j2000':
+        frame = 'fk5'
+    elif record['coordsys'][0].lower() == 'galactic':
+        frame = 'galactic'
+        pass
+
+    obstime = get_obstime(record)
+    coord = astropy.coordinates.SkyCoord(x, y, frame=frame, obstime=obstime)
+    return coord
+
+    
 
 def print_header(record):
     def register(key, description):
@@ -75,6 +133,8 @@ def plot_header(record, title=''):
         'betdel',
         'azimuth',
         'elevatio',
+        'crval2',
+        'crval3',
         'exposure',
         'thot',
         'tcold',
@@ -92,7 +152,7 @@ def plot_header(record, title=''):
     ]
     
     fig = matplotlib.pyplot.figure(figsize=(18, 8))
-    ax = [fig.add_subplot(4, 6, i) for i in range(1, 19)]
+    ax = [fig.add_subplot(4, 6, i) for i in range(1, 21)]
     [_plot(_ax, _key) for _ax, _key in zip(ax, keys)]
     fig.suptitle(f'{title}')
     return fig
