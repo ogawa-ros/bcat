@@ -43,9 +43,12 @@ def _read_header(path):
 
 
 def load(path, mode='r+'):
+    path = pathlib.Path(path)
     header, start_addr = _read_header(path)
     ret = {}
     ret.update(header)
+    array_size = path.stat().st_size - start_addr
+    ret['num_records'] = array_size // header['dtype'].itemsize
     ret['array'] = numpy.memmap(
         path,
         dtype = header['dtype'],
