@@ -35,7 +35,7 @@ class stage1_chopper_wheel(object):
         for i in range(len(spectrum_on)):
             idx_hot = numpy.abs(obstime_hot-obstime_on[i]).argmin()
             idx_off = numpy.abs(obstime_off-obstime_on[i]).argmin()
-            Tas.append(Tamb*(spectrum_on[i]-spectrum_off[idx_off])/(spectrum_hot[idx_hot]-spectrum_off[idx_off]))
+            _Tas.append(Tamb*(spectrum_on[i]-spectrum_off[idx_off])/(spectrum_hot[idx_hot]-spectrum_off[idx_off]))
         Tas = numpy.array(_Tas)
 
         return Tas,coord_on
