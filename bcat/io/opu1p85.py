@@ -151,7 +151,7 @@ class opu1p85(object):
         #### 旧型のdf_spec1を作成していたところ #####
 
         #### 旧型のdf_specを作成していたところ #####
-        concat_index = df_spec_1[(df_spec_1['wcs_x'] == df_spec_1['wcs_x']) & (df_spec_1['wcs_y'] == df_spec_1['wcs_y'])].index.tolist() + line_data.index.tolist()
+        concat_index = df_spec_1[~df_spec_1.isna().any(axis=1)].index.tolist() + line_data[~line_data.isna().any(axis=1)].index.tolist()
         concat_index = [k for k, v in collections.Counter(concat_index).items() if v > 1]
         concat_index = sorted(concat_index)
         df_spec = pandas.concat([df_spec_1.loc[concat_index], line_data.loc[concat_index]], axis=1)
