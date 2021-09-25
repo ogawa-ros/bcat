@@ -154,8 +154,8 @@ class opu1p85(object):
         time_list = df_resample["wcs_x"].index.tolist() + df_resample["wcs_y"].index.tolist() + line_data.index.tolist()
         time_list = set(time_list)
         time_list = sorted(time_list)
-        df_resample_wcs_x = pd.DataFrame(index=time_list, data=df_resample["wcs_x"])
-        df_resample_wcs_y = pd.DataFrame(index=time_list, data=df_resample["wcs_y"])
+        df_resample_wcs_x = pandas.DataFrame(index=time_list, data=df_resample["wcs_x"])
+        df_resample_wcs_y = pandas.DataFrame(index=time_list, data=df_resample["wcs_y"])
         df_spec_1 = pandas.concat([df_resample_wcs_x["wcs_x"],df_resample_wcs_y["wcs_y"]], axis=1).interpolate()
 
         # df_spec_1、line_dataにはそれぞれnanが入っている

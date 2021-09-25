@@ -1,4 +1,4 @@
-import baseline
+from bcat.stage2 import baseline
 import numpy
 import matplotlib.pyplot
 #%matplotlib inline
