@@ -152,15 +152,7 @@ class speed:
                 obstime = tobs,     # 時刻を設定する
                 location = loc1p85, # 観測者座標も設定する
             )
-        # if mode=='radec'
-        #     target = astropy.coordinates.SkyCoord(
-        #         base_data.data.coord.icrs.ra,
-        #         base_data.data.coord.icrs.dec,
-        #         frame = 'icrs',
-        #         obstime = tobs,     # 時刻を設定する
-        #         location = loc1p85, # 観測者座標も設定する
-        #     )
-        # if mode == 'gal':
+
 
 
         # V_observer (LSR 系からみた観測者の速度) の計算
