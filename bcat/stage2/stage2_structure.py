@@ -1,7 +1,8 @@
 import numpy
 import astropy.units
-
+import dataclasses
 import bcat.common.bcatio
+from bcat.common.common_structure import freq_axis
 
 
 dtype_base = [
@@ -14,6 +15,26 @@ dtype_base = [
     ('vobs', 'float32'),
     ('rms', 'float32'),
 ]
+
+
+@dataclasses.dataclass
+class stage2_data_structure:
+    label: str = ''
+    coord: numpy.array = numpy.array([])
+    spectrum: numpy.array = numpy.array([])
+    rf: freq_axis = freq_axis()
+    
+    def __post_init__(self):
+        if len(self.coord) != self.spectrum.shape[0]:
+            errmsg = f'Array length is different between coord and spectrum: ' +\
+                     f'({len(self.coord)}, {self.spectrum.shape[0]})'
+            raise Exception(errmsg)
+        
+        pass
+        
+    def get_rf_axis(self):
+        return self.rf.get_axis(self.spectrum.shape[1])
+
 
 def generate_stage2_array(t, x, y, f0, df, spec, vobs=0, rms=0):
     num_spec, num_ch = spec.shape
@@ -65,4 +86,5 @@ def save_stage2(path, t, x, y, frame, f0, df, spec, f_rest,
 
 def load_stage2(path):
     return bcat.common.bcatio.load(path)
+
 
