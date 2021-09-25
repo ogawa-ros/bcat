@@ -17,7 +17,10 @@ import bcat.structure
 import bcat.stage1
 
 class opu1p85(object):
-
+    """
+    諸々の関数はcontainer関数で使用されている。
+    このclassは下のopendata関数で、インスタンス化されて、使用している。
+    """
     def __init__(self):
         self.loc1p85 = astropy.coordinates.EarthLocation(
                 lon = 138.472153 * astropy.units.deg,
@@ -127,35 +130,43 @@ class opu1p85(object):
         rf = {'12CO21':rf2,'13CO21':rf1,'C18O21':rf1,
                 '12CO32':rf4,'13CO32':rf3,'C18O32':rf3,
                 }
-        xffts= db.open_table(line_board[spec]).read(astype='array')
+        xffts= db.open_table(self.line_board[spec]).read(astype='array')
         data = xffts['data']
         del xffts
-
         line_data = pandas.DataFrame(data=(data[:,:-1])[:,mask[spec]], index=pandas.to_datetime(data[:,-1], unit='s')) # 分光データの最後の timestamp
         f = bcat.structure.freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
 
         return line_data,f
 
     def create_spec(self,db,spec,vwidth):
+        """
+        入力:
+            db:データ
+            spec:輝線名("12CO21" etc)
+        出力:
+            df_spec:時間をindexとし、columnに座標、データが入ったpandasのDataFrame
+            freq:周波数
+        """
         _df_resample = self.necstdb2pandas(db)
         df_resample = self.read_wcs(db,_df_resample)
         line_data,freq = self.get_linedata(db,spec,vwidth)
 
-        #### 旧型のdf_spec1を作成していたところ #####
         time_list = df_resample["wcs_x"].index.tolist() + df_resample["wcs_y"].index.tolist() + line_data.index.tolist()
         time_list = set(time_list)
         time_list = sorted(time_list)
         df_resample_wcs_x = pd.DataFrame(index=time_list, data=df_resample["wcs_x"])
         df_resample_wcs_y = pd.DataFrame(index=time_list, data=df_resample["wcs_y"])
         df_spec_1 = pandas.concat([df_resample_wcs_x["wcs_x"],df_resample_wcs_y["wcs_y"]], axis=1).interpolate()
-        #### 旧型のdf_spec1を作成していたところ #####
 
-        #### 旧型のdf_specを作成していたところ #####
+        # df_spec_1、line_dataにはそれぞれnanが入っている
+        # nanが入っていない列のindexを取得する
         concat_index = df_spec_1[~df_spec_1.isna().any(axis=1)].index.tolist() + line_data[~line_data.isna().any(axis=1)].index.tolist()
+        # nanが入っていない、df_spec_1とline_dataの共通するindexを取得する(共通していると同じindexが二つ含まれているはず)
         concat_index = [k for k, v in collections.Counter(concat_index).items() if v > 1]
+        # concat_indexは時間で、ばらばらになっては困るため、念のためsort
         concat_index = sorted(concat_index)
+        # axis=1で結合
         df_spec = pandas.concat([df_spec_1.loc[concat_index], line_data.loc[concat_index]], axis=1)
-        #### 旧型のdf_specを作成していたところ #####
         
         del line_data
         return df_spec,freq
@@ -211,8 +222,8 @@ class opu1p85(object):
         print(len(frame))
         print(len(df_spec['wcs_x']))
         coord = astropy.coordinates.SkyCoord(
-            ra = numpy.array(df_spec['wcs_x']) * astropy.units.deg,
-            dec = numpy.array(df_spec['wcs_y']) * astropy.units.deg,
+            numpy.array(df_spec['wcs_x']) * astropy.units.deg,
+            numpy.array(df_spec['wcs_y']) * astropy.units.deg,
             frame = frame,
             temperature = 27 *deg_C,
             location = self.loc1p85,
