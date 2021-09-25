@@ -11,6 +11,7 @@ from astropy.units import km
 from astropy.units import s
 from astropy.units import deg_C
 from astropy.constants import c
+import collections
 
 import bcat.structure
 import bcat.stage1
@@ -126,21 +127,36 @@ class opu1p85(object):
         rf = {'12CO21':rf2,'13CO21':rf1,'C18O21':rf1,
                 '12CO32':rf4,'13CO32':rf3,'C18O32':rf3,
                 }
-
-        xffts= db.open_table(self.line_board[spec]).read(astype='array')
-        line_data = pandas.DataFrame(data=(xffts['data'][:,:-1])[:,mask[spec]], index=pandas.to_datetime(xffts['data'][:,-1], unit='s')) # 分光データの最後の timestamp
-        f = bcat.structure.freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
+        xffts= db.open_table(line_board[spec]).read(astype='array')
+        data = xffts['data']
         del xffts
+
+        line_data = pandas.DataFrame(data=(data[:,:-1])[:,mask[spec]], index=pandas.to_datetime(data[:,-1], unit='s')) # 分光データの最後の timestamp
+        f = bcat.structure.freq_axis(2/32768*astropy.units.GHz, rf[spec][mask[spec]][0])
+
         return line_data,f
 
     def create_spec(self,db,spec,vwidth):
         _df_resample = self.necstdb2pandas(db)
         df_resample = self.read_wcs(db,_df_resample)
         line_data,freq = self.get_linedata(db,spec,vwidth)
-        df_spec_2 = pandas.concat([df_resample["wcs_x"][::1],df_resample["wcs_y"][::1], line_data], axis=1)
-        df_spec_1 = pandas.concat([df_spec_2["wcs_x"][::1],df_spec_2["wcs_y"][::1]], axis=1).interpolate()
-        del df_spec_2
-        df_spec = pandas.concat([df_spec_1, line_data], axis=1).dropna(how="any")
+
+        #### 旧型のdf_spec1を作成していたところ #####
+        time_list = df_resample["wcs_x"].index.tolist() + df_resample["wcs_y"].index.tolist() + line_data.index.tolist()
+        time_list = set(time_list)
+        time_list = sorted(time_list)
+        df_resample_wcs_x = pd.DataFrame(index=time_list, data=df_resample["wcs_x"])
+        df_resample_wcs_y = pd.DataFrame(index=time_list, data=df_resample["wcs_y"])
+        df_spec_1 = pandas.concat([df_resample_wcs_x["wcs_x"],df_resample_wcs_y["wcs_y"]], axis=1).interpolate()
+        #### 旧型のdf_spec1を作成していたところ #####
+
+        #### 旧型のdf_specを作成していたところ #####
+        concat_index = df_spec_1[~df_spec_1.isna().any(axis=1)].index.tolist() + line_data[~line_data.isna().any(axis=1)].index.tolist()
+        concat_index = [k for k, v in collections.Counter(concat_index).items() if v > 1]
+        concat_index = sorted(concat_index)
+        df_spec = pandas.concat([df_spec_1.loc[concat_index], line_data.loc[concat_index]], axis=1)
+        #### 旧型のdf_specを作成していたところ #####
+        
         del line_data
         return df_spec,freq
 
