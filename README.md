@@ -13,7 +13,7 @@ bcatで観測データを読み込み、chopper wheel、座標のregrid、baseli
 d = bcat.io.opu1p85.opendata(path,vwidth=150,spec='12CO21')
 ```
 
-でデータを読み込む。
-path : データがあるpath
-vwidth : 速度範囲
-spec : 指定する輝線
+でデータを読み込む。  
+path : データがあるpath  
+vwidth : 速度範囲  
+spec : 指定する輝線  
