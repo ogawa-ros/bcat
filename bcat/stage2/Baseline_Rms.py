@@ -1,4 +1,4 @@
-from bcat.stage2 import baseline
+import baseline
 import numpy
 import matplotlib.pyplot
 #%matplotlib inline
@@ -46,7 +46,7 @@ class Baseline_Rms:
         pass
 
     def mean_sp(self):
-        self.mean_spec = numpy.mean(self.sp_datas, axis=0)
+        self.mean_spec = numpy.nanmean(self.sp_datas, axis=0)
 
         fig = matplotlib.pyplot.figure()
         ax = fig.add_subplot(111)
@@ -217,4 +217,4 @@ class Baseline_Rms:
         for i in self.data:
             rms_list.append(i['RMS'])
 
-        return numpy.mean(rms_list)
+        return numpy.nanmean(rms_list)
