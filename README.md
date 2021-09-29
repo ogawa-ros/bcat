@@ -9,6 +9,7 @@ bcatで観測データを読み込み、chopper wheel、座標のregrid、baseli
 ## 使用例
 それぞれのパートの例を示す
 
+- データの取得
 ```python
 d = bcat.io.opu1p85.opendata(path,vwidth=150,spec='12CO21')
 ```
@@ -17,3 +18,14 @@ d = bcat.io.opu1p85.opendata(path,vwidth=150,spec='12CO21')
 path : データがあるpath  
 vwidth : 速度範囲  
 spec : 指定する輝線  
+
+- chopper wheel
+```python
+Tas,coord_on = d.get_chopper_wheel_spec()
+```
+上記の「データの取得」で得たデータでchopper wheelを行う
+
+
+
+
+
