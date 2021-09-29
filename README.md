@@ -40,3 +40,5 @@ bcatで観測データを読み込み、chopper wheel、座標のregrid、baseli
     ```
     baselinefitを行う関数。
 
+## 環境
+メモリ：60GBのPCで作成を行なった。（目視では、メモリが30GBもあれば十分）
