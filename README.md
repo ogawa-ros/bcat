@@ -44,7 +44,7 @@ bcatで観測データを読み込み、chopper wheel、座標のregrid、baseli
 ## 環境
 メモリ：60GBのPCで作成を行なった。（目視では、メモリが30GBもあれば十分）
 
-macでも使用可能 ((メモリがある程度消費されため、使用する際はメモリの確保が必要))
-mac環境
-    プロセッサ：1.2 GHz クアッドコアIntel Core i7
-    メモリ：16 GB 3733 MHz LPDDR4X
+macでも使用可能 ((メモリがある程度消費されため、使用する際はメモリの確保が必要))  
+mac環境  
+   - プロセッサ：1.2 GHz クアッドコアIntel Core i7
+   - メモリ：16 GB 3733 MHz LPDDR4X
