@@ -12,7 +12,7 @@ bcatで観測データを読み込み、chopper wheel、座標のregrid、baseli
 
 - データの取得
     ```python
-    d = bcat.io.opu1p85.opendata(path,vwidth=150,spec='12CO21')
+    d = bcat.io.opu1p85.opendata(path,vwidth=150, spec='12CO21')
     ```
     でデータを読み込む。  
     path : データがあるpath  
