@@ -1,5 +1,6 @@
 # bcat
 1.85m望遠鏡の観測データを解析するためのソフトウェア
+
 <span style='color; red'> 現在バグが見つかったため、調査中:disappointed: </span>
 
 ## 仕様概要
