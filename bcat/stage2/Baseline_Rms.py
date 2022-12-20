@@ -1,4 +1,4 @@
-import baseline
+from . import baseline
 import numpy
 import matplotlib.pyplot
 #%matplotlib inline
